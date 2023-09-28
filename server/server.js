@@ -15,10 +15,6 @@ const server = new ApolloServer({
   context: authMiddleware,
 });
 
-// integrate our Apollo server with the Express application as middleware
-const startApolloServer = async () => {
-await server.start();
-
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
@@ -31,7 +27,10 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/build/index.html"));
 });
 
-
+// integrate our Apollo server with the Express application as middleware
+const startApolloServer = async () => {
+await server.start()
+server.applyMiddleware({ app })
 db.once('open', () => {
   app.listen(PORT, () => {console.log(`🌍 Now listening on localhost:${PORT}`);
     console.log(`Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`);
