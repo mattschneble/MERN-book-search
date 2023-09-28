@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   Container,
-  Card,
-  Button,
+  Col,
   Row,
-  Col
+  Card,
+  Button
 } from 'react-bootstrap';
 
-import Auth from '../utils/auth';
-import { removeBookId } from '../utils/localStorage';
-import { GET_ME } from '../utils/queries';
-import { removeBookId } from '../utils/localStorage';
 import { useQuery, useMutation } from '@apollo/client';
+import { GET_ME } from '../utils/queries';
+import { REMOVE_BOOK } from '../utils/mutations';
+import { removeBookId } from '../utils/localStorage';
 
 const SavedBooks = () => {
   const { loading, data } = useQuery(GET_ME);
   const [removeBook] = useMutation(REMOVE_BOOK);
 
-  const userData = data?.me || {};
+  const userData = data?.me || [];
 
   const handleDeleteBook = async (bookId) => {
     try {
@@ -34,11 +33,11 @@ const SavedBooks = () => {
 
   return (
     <>
-    <Jumbotron fluid className="text-light bg-dark">
+    <div fluid className="text-light bg-dark">
       <Container>
         <h1>Viewing saved books!</h1>
       </Container>
-    </Jumbotron>
+    </div>
     <Container>
       <h2>
         {userData.savedBooks.length
@@ -47,9 +46,10 @@ const SavedBooks = () => {
         }:`
       : 'You have zero saved books!'}
       </h2>
-      <CardColumns>
+      <Row>
         {userData.savedBooks.map((book) => {
           return (
+            <Col md="4">
             <Card key={book.bookId} border="dark">
               {book.image ? (
                 <Card.Img src={book.image}
@@ -66,9 +66,10 @@ const SavedBooks = () => {
             </Button>
           </Card.Body>
         </Card>
+        </Col>
         );
       })}
-      </CardColumns>
+      </Row>
     </Container>
     </>
   );
