@@ -35,30 +35,30 @@ const resolvers = {
             return { token, user };
         },
 
-        saveBook: async (parent, {bookToSave }, context) => {
+        saveBook: async (parent, args, context) => {
             if (context.user) {
-                const updatedBooks = await User.findOneAndUpdate(
-                    { _id: context.user._id },
-                    { $addToSet: { savedBooks: bookToSave } },
-                    { new: true,}
-                ).populate("savedBooks");
-                return updatedBooks;
-                }
-        },
+                const updatedBooks = await User.findOne({_id: context.user._id});
+                user.savedBooks.push(args.input);
+                await user.save();
+                return user;
+        }
+
+        throw new AuthenticationError("You must be logged in to use this feature. Please log in.");
+    },
 
         removeBook: async (parent, { bookId }, context) => {
             if (context.user) {
-                const updatedBooks = await User.findOneAndUpdate(
-                    { _id: context.user._id },
-                    { $pull: { savedBooks: { bookId: bookId } } },
-                    { new: true }
-                ).populate("savedBooks");
-                return updatedBooks;
+                const user = await User.findOne({_id: context.user._id});
+                const books = user.savedBooks.map((book) => book.bookId).indexOf(bookId);
+                user.savedBooks.splice(bookIndex, 1);
+                await user.save();
+                
+                return user;
             }
-            throw new AuthenticationError("You must be logged in to use this feature. Please log in.")
-        },
-    },
-};
+            throw new AuthenticationError("You must be logged in to use this feature. Please log in.");
+        }
+    }
+}
 
 // export the resolvers
 module.exports = resolvers;
