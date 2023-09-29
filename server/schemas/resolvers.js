@@ -48,10 +48,11 @@ const resolvers = {
 
         removeBook: async (parent, { bookId }, context) => {
             if (context.user) {
-                const user = await User.findOne({_id: context.user._id});
-                const books = user.savedBooks.map((book) => book.bookId).indexOf(bookId);
-                user.savedBooks.splice(bookIndex, 1);
-                await user.save();
+                const user = await User.findOneAndUpdate(
+                    {_id: context.user._id},
+                    { $pull: { savedBooks: { bookId: args.bookId } }},
+                    {new: true}
+                );
                 
                 return user;
             }
