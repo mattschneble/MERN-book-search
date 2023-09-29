@@ -46,7 +46,7 @@ const resolvers = {
         throw new AuthenticationError("You must be logged in to use this feature. Please log in.");
     },
 
-        removeBook: async (parent, { bookId }, context) => {
+        removeBook: async (parent, args, context) => {
             if (context.user) {
                 const user = await User.findOneAndUpdate(
                     {_id: context.user._id},
